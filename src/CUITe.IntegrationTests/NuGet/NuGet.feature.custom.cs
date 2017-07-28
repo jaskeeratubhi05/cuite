@@ -10,6 +10,7 @@ namespace CUITe.IntegrationTests.NuGet
     [DeploymentItem("CUITe.VS2012.2.0.0-beta.nupkg")]
     [DeploymentItem("CUITe.VS2013.2.0.0-beta.nupkg")]
     [DeploymentItem("CUITe.VS2015.2.0.0-beta.nupkg")]
+    [DeploymentItem("CUITe.VS2017.2.0.0-beta.nupkg")]
     public partial class NuGetFeature
     {
         /// <summary>

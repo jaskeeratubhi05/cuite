@@ -84,7 +84,8 @@ namespace CUITe.IntegrationTests.NuGet
                 { "2010", "10" },
                 { "2012", "11" },
                 { "2013", "12" },
-                { "2015", "14" }
+                { "2015", "14" },
+                { "2017", "15" }
             };
 
             if (!visualStudioVersionMap.ContainsKey(visualStudioVersion))
@@ -121,6 +122,7 @@ namespace CUITe.IntegrationTests.NuGet
                 case "11":
                 case "12":
                 case "14":
+                case "15":
                     this.testProjectTemplatePath = Path.Combine(this.visualStudioProjectTemplateCachePath, @"CSharp\Test\1033\TestProject");
                     this.codedUiTestTemplatePath = Path.Combine(this.visualStudioItemTemplateCachePath, @"CSharp\Test\1033\CodedUITest");
                     break;
@@ -355,6 +357,39 @@ namespace CUITe.IntegrationTests.NuGet
             return cacheFolder.ToString();
         }
 
+        private string GetVisualStudioInstallPath(string visualStudioVersion)
+        {
+            List<string> registryKeys = new List<string>
+            {
+                "HKEY_LOCAL_MACHINE",
+                "SOFTWARE"
+            };
+
+            if (Environment.Is64BitOperatingSystem)
+            {
+                registryKeys.Add("Wow6432Node");
+            }
+
+            registryKeys.AddRange(new[]
+            {
+                "Microsoft",
+                "VisualStudio",
+                "SxS",
+                "VS7"
+            });
+
+            string registryKeyName = string.Join(@"\", registryKeys);
+
+            string registryValueName = $"{visualStudioVersion}.0";
+            object installPath = Registry.GetValue(registryKeyName, registryValueName, null);
+            if (installPath == null)
+            {
+                throw new Exception(string.Format("Failed to get registry value '{0}' from key '{1}'", registryValueName, registryKeyName));
+            }
+
+            return installPath.ToString();
+        }
+
         /// <summary>
         /// Gets the visual studio project template cache path.
         /// </summary>
@@ -365,7 +400,14 @@ namespace CUITe.IntegrationTests.NuGet
         /// </returns>
         private string GetVisualStudioProjectTemplateCachePath(string visualStudioVersion)
         {
-            return this.GetVisualStudioTemplateCachePath(visualStudioVersion, "Project");
+            switch (visualStudioVersion)
+            {
+                case "15":
+                    string installPath = this.GetVisualStudioInstallPath(visualStudioVersion);
+                    return Path.Combine(installPath, "Common7", "IDE", "ProjectTemplates");
+                default:
+                    return this.GetVisualStudioTemplateCachePath(visualStudioVersion, "Project");
+            }
         }
 
         /// <summary>
@@ -378,7 +420,14 @@ namespace CUITe.IntegrationTests.NuGet
         /// </returns>
         private string GetVisualStudioItemTemplateCachePath(string visualStudioVersion)
         {
-            return this.GetVisualStudioTemplateCachePath(visualStudioVersion, "Item");
+            switch (visualStudioVersion)
+            {
+                case "15":
+                    string installPath = this.GetVisualStudioInstallPath(visualStudioVersion);
+                    return Path.Combine(installPath, "Common7", "IDE", "ItemTemplates");
+                default:
+                    return this.GetVisualStudioTemplateCachePath(visualStudioVersion, "Item");
+            }
         }
 
         [When(@"the CUITe nuget package ""(.*)"", ""(.*)"" is added to the project")]
@@ -872,6 +921,19 @@ namespace CUITe.IntegrationTests.NuGet
                 Assert.IsTrue(buildSucceeded, txtSelection.Text);
             }
 
+            if (this.visualStudioVersionNumber == "15")
+            {
+                // wait for tests to be discovered
+                // read the tests window output
+                string output = this.GetTestsOutput();
+                while (!output.Contains("Discover test finished"))
+                {
+                    Trace.WriteLine(output);
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
+                    output = this.GetTestsOutput();
+                }
+            }
+
             this.RunAllTests();
         }
 
@@ -923,7 +985,21 @@ namespace CUITe.IntegrationTests.NuGet
                     // Activate "Test Explorer" window
                     const string testExplorerGuid = "{E1B7D1F8-9B3C-49B1-8F4F-BFC63A88835D}";
 
-                    Window testExplorerWindow = this.dte.Windows.Item(testExplorerGuid);
+                    Window testExplorerWindow = null;
+                    foreach (Window window in this.dte.Windows)
+                    {
+                        if (window.Caption == "Test Explorer")
+                        {
+                            testExplorerWindow = window;
+                            break;
+                        }
+                    }
+
+                    if (testExplorerWindow == null)
+                    {
+                        testExplorerWindow = this.dte.Windows.Item(testExplorerGuid);
+                    }
+
                     testExplorerWindow.Activate();
 
                     this.ExecuteCommand("TestExplorer.RunAllTests");
@@ -951,7 +1027,7 @@ namespace CUITe.IntegrationTests.NuGet
                     // results file must not exist
                     File.Delete(testResultsFile.FilePath);
 
-                    string fileName = string.Format(@"C:\Program Files (x86)\Microsoft Visual Studio {0}.0\Common7\IDE\MSTest.exe", this.visualStudioVersionNumber);
+                    string fileName = this.GetMsTestFilePath(this.visualStudioVersionNumber);
                     List<string> arguments = new List<string>
                     {
                         string.Format("/testcontainer:{0}", Path.Combine(this.testProjectPath, "bin", "Debug", string.Format("{0}.dll", ProjectName))),
@@ -990,11 +1066,26 @@ namespace CUITe.IntegrationTests.NuGet
                     case "14":
                         testsPassedCount = this.GetNumberOfPassedTestsInVisualStudio2015(testResultsFilePath);
                         break;
+                    case "15":
+                        testsPassedCount = this.GetNumberOfPassedTestsInVisualStudio2017(testResultsFilePath);
+                        break;
                     default:
                         throw new NotSupportedException(this.visualStudioVersionNumber);
                 }
 
                 Assert.AreEqual(expectedPassedTests, testsPassedCount, File.ReadAllText(testResultsFilePath));
+            }
+        }
+
+        private string GetMsTestFilePath(string visualStudioVersionNumber)
+        {
+            switch (visualStudioVersionNumber)
+            {
+                case "15":
+                    string installPath = this.GetVisualStudioInstallPath(visualStudioVersionNumber);
+                    return Path.Combine(installPath, "Common7", "IDE", "MsTest.exe");
+                default:
+                    return string.Format(@"C:\Program Files (x86)\Microsoft Visual Studio {0}.0\Common7\IDE\MSTest.exe", this.visualStudioVersionNumber);
             }
         }
 
@@ -1141,6 +1232,46 @@ namespace CUITe.IntegrationTests.NuGet
                                 {
                                     VisualStudio2015.OutputType outputType = (VisualStudio2015.OutputType)unitTestResultType.Items[0];
                                     VisualStudio2015.OutputTypeErrorInfo errorInfo = outputType.ErrorInfo;
+                                    if (errorInfo != null)
+                                    {
+                                        errorMessage = ((XmlNode[])errorInfo.Message)[0].Value;
+                                    }
+                                }
+
+                                Assert.AreEqual("Passed", unitTestResultType.outcome, errorMessage);
+                                testsPassedCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return testsPassedCount;
+        }
+
+        private int GetNumberOfPassedTestsInVisualStudio2017(string trxFilePath)
+        {
+            int testsPassedCount = 0;
+            using (StreamReader fileStreamReader = new StreamReader(trxFilePath))
+            {
+                XmlSerializer xmlSer = new XmlSerializer(typeof(VisualStudio2017.TestRunType));
+                VisualStudio2017.TestRunType testRunType = (VisualStudio2017.TestRunType)xmlSer.Deserialize(fileStreamReader);
+                // Navigate to UnitTestResultType object and update the sheet with test result information
+                foreach (object itob1 in testRunType.Items)
+                {
+                    VisualStudio2017.ResultsType resultsType = itob1 as VisualStudio2017.ResultsType;
+                    if (resultsType != null)
+                    {
+                        foreach (object itob2 in resultsType.Items)
+                        {
+                            VisualStudio2017.UnitTestResultType unitTestResultType = itob2 as VisualStudio2017.UnitTestResultType;
+                            if (unitTestResultType != null)
+                            {
+                                string errorMessage = null;
+                                if (unitTestResultType.Items != null)
+                                {
+                                    VisualStudio2017.OutputType outputType = (VisualStudio2017.OutputType)unitTestResultType.Items[0];
+                                    VisualStudio2017.OutputTypeErrorInfo errorInfo = outputType.ErrorInfo;
                                     if (errorInfo != null)
                                     {
                                         errorMessage = ((XmlNode[])errorInfo.Message)[0].Value;

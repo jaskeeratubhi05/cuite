@@ -95,7 +95,7 @@ namespace Sut.HtmlTest
             // so just check for <body
             const string expected = "<body";
 
-            string outerHtml = doc.SourceControl.GetProperty("OuterHtml").ToString();
+            string outerHtml = doc.SourceControl.GetProperty("OuterHtml").ToString().Trim();
 
             Assert.AreEqual(expected, outerHtml.Substring(0, expected.Length), true, outerHtml);
         }

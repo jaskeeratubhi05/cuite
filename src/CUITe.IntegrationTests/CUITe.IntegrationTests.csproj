@@ -162,6 +162,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="NuGet\VisualStudio2017\vstst.cs" />
     <Compile Include="ObjectRecorder\Screens\Notepad.cs" />
     <EmbeddedResource Include="..\SystemsUnderTest\TestHelpers\TempWebPage.cs">
       <Link>NuGet\TempWebPage.cs</Link>

@@ -2,7 +2,14 @@ version: 2.0.{build}
 branches:
   only:
   - master
-image: Visual Studio 2015
+
+environment:
+   matrix:
+      # Visual Studio 2015
+      - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      # Visual Studio 2017
+      - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
 init:
 - ps: |
     Function Get-IniContent {  
@@ -262,80 +269,83 @@ init:
     Write-Host "Builds require a Remote Desktop Connection (RDP) to continue..."  
     $blockRdp = $true; iex ($webclient.DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))  
       
-    # Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight  
-    Write-Host "Downloading Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight..."  
-    $msiFilePath = "$($env:USERPROFILE)\UITestPluginForSilverlightVS2013.msi"  
-    $logFilePath = "$($env:TEMP)\UITestPluginForSilverlightVS2013.txt"  
-    $webclient.DownloadFile('https://visualstudiogallery.msdn.microsoft.com/51b4a94a-1878-4dcc-81e0-7dc92131d2da/file/133666/1/UITestPluginForSilverlightVS2013.msi', $msiFilePath)  
-    Write-Host "Installing Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight..."  
-    $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
-    $exitCode = $process.ExitCode  
-    if ($exitCode -ne 0)  
-    {  
-      Get-Content $logFilePath  
-      throw "Command failed with exit code $exitCode."  
-    }  
-    del $msiFilePath  
-    del $logFilePath  
-    Write-Host "Visual Studio 2013 Coded UI Test Plugin for Silverlight successfully installed" -ForegroundColor Green  
-      
-    # Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight  
-    Write-Host "Downloading Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight..."  
-    $msiFilePath = "$($env:USERPROFILE)\UITestPluginForSilverlightVS2015.msi"  
-    $logFilePath = "$($env:TEMP)\UITestPluginForSilverlightVS2015.txt"  
-    $webclient.DownloadFile('https://visualstudiogallery.msdn.microsoft.com/bf0caedc-90eb-46af-9c1a-8e68d013bb99/file/189320/1/UITestPluginForSilverlightVS2015.msi', $msiFilePath)  
-    Write-Host "Installing Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight..."  
-    $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
-    $exitCode = $process.ExitCode  
-    if ($exitCode -ne 0)  
-    {  
-      Get-Content $logFilePath  
-      throw "Command failed with exit code $exitCode."  
-    }  
-    del $msiFilePath  
-    del $logFilePath  
-    Write-Host "Visual Studio 2015 Coded UI Test Plugin for Silverlight successfully installed" -ForegroundColor Green  
-      
-    # Microsoft Silverlight 5 Toolkit - December 2011  
-    Write-Host "Downloading Microsoft Silverlight 5 Toolkit - December 2011..."  
-    $msiFilePath = "$($env:USERPROFILE)\Silverlight_5_Toolkit_December_2011.msi"  
-    $logFilePath = "$($env:TEMP)\Silverlight_5_Toolkit_December_2011.txt"  
-    $webclient.DownloadFile('http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=silverlight&DownloadId=311823&FileTime=129679336571930000&Build=21050', $msiFilePath)  
-    Write-Host "Installing Microsoft Silverlight 5 Toolkit - December 2011..."  
-    $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
-    $exitCode = $process.ExitCode  
-    if ($exitCode -ne 0)  
-    {  
-      Get-Content $logFilePath  
-      throw "Command failed with exit code $exitCode."  
-    }  
-    del $msiFilePath  
-    del $logFilePath  
-    Write-Host "Microsoft Silverlight 5 Toolkit - December 2011 successfully installed" -ForegroundColor Green  
-      
-    # Microsoft Silverlight 5 Developer Runtime for Windows (64 bit)  
-    Write-Host "Downloading Microsoft Silverlight 5 Developer Runtime for Windows (64 bit)..."  
-    $exeFilePath = "$($env:USERPROFILE)\Silverlight_Developer_x64.exe"  
-    $retry_attempts = 3  
-    for($i=0; $i -lt $retry_attempts; $i++){  
-        try {  
-            $webclient.DownloadFile('http://download.microsoft.com/download/1/F/6/1F637DB3-8EF9-4D96-A8F1-909DFD7C5E69/50428.00/Silverlight_Developer_x64.exe', $exeFilePath)  
-            break  
+    if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015")
+    {
+        # Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight  
+        Write-Host "Downloading Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight..."  
+        $msiFilePath = "$($env:USERPROFILE)\UITestPluginForSilverlightVS2013.msi"  
+        $logFilePath = "$($env:TEMP)\UITestPluginForSilverlightVS2013.txt"  
+        $webclient.DownloadFile('https://visualstudiogallery.msdn.microsoft.com/51b4a94a-1878-4dcc-81e0-7dc92131d2da/file/133666/1/UITestPluginForSilverlightVS2013.msi', $msiFilePath)  
+        Write-Host "Installing Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight..."  
+        $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
+        $exitCode = $process.ExitCode  
+        if ($exitCode -ne 0)  
+        {  
+          Get-Content $logFilePath  
+          throw "Command failed with exit code $exitCode."  
         }  
-        Catch [Exception]{  
-            Start-Sleep 1  
-        }  
-    }  
-    Write-Host "Installing Microsoft Silverlight 5 Developer Runtime for Windows (64 bit)..."  
-    $process = (Start-Process -FilePath $exeFilePath -ArgumentList "/q" -Wait -Passthru)  
-    $exitCode = $process.ExitCode  
-    if ($exitCode -ne 0)  
-    {  
-      throw "Command failed with exit code $exitCode."  
-    }  
-    del $exeFilePath  
-    Write-Host "Microsoft Silverlight 5 Developer Runtime for Windows (64 bit) successfully installed" -ForegroundColor Green  
+        del $msiFilePath  
+        del $logFilePath  
+        Write-Host "Visual Studio 2013 Coded UI Test Plugin for Silverlight successfully installed" -ForegroundColor Green  
       
+        # Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight  
+        Write-Host "Downloading Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight..."  
+        $msiFilePath = "$($env:USERPROFILE)\UITestPluginForSilverlightVS2015.msi"  
+        $logFilePath = "$($env:TEMP)\UITestPluginForSilverlightVS2015.txt"  
+        $webclient.DownloadFile('https://visualstudiogallery.msdn.microsoft.com/bf0caedc-90eb-46af-9c1a-8e68d013bb99/file/189320/1/UITestPluginForSilverlightVS2015.msi', $msiFilePath)  
+        Write-Host "Installing Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight..."  
+        $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
+        $exitCode = $process.ExitCode  
+        if ($exitCode -ne 0)  
+        {  
+          Get-Content $logFilePath  
+          throw "Command failed with exit code $exitCode."  
+        }  
+        del $msiFilePath  
+        del $logFilePath  
+        Write-Host "Visual Studio 2015 Coded UI Test Plugin for Silverlight successfully installed" -ForegroundColor Green  
+      
+        # Microsoft Silverlight 5 Toolkit - December 2011  
+        Write-Host "Downloading Microsoft Silverlight 5 Toolkit - December 2011..."  
+        $msiFilePath = "$($env:USERPROFILE)\Silverlight_5_Toolkit_December_2011.msi"  
+        $logFilePath = "$($env:TEMP)\Silverlight_5_Toolkit_December_2011.txt"  
+        $webclient.DownloadFile('http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=silverlight&DownloadId=311823&FileTime=129679336571930000&Build=21053', $msiFilePath)  
+        Write-Host "Installing Microsoft Silverlight 5 Toolkit - December 2011..."  
+        $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
+        $exitCode = $process.ExitCode  
+        if ($exitCode -ne 0)  
+        {  
+          Get-Content $logFilePath  
+          throw "Command failed with exit code $exitCode."  
+        }  
+        del $msiFilePath  
+        del $logFilePath  
+        Write-Host "Microsoft Silverlight 5 Toolkit - December 2011 successfully installed" -ForegroundColor Green  
+      
+        # Microsoft Silverlight 5 Developer Runtime for Windows (64 bit)  
+        Write-Host "Downloading Microsoft Silverlight 5 Developer Runtime for Windows (64 bit)..."  
+        $exeFilePath = "$($env:USERPROFILE)\Silverlight_Developer_x64.exe"  
+        $retry_attempts = 3  
+        for($i=0; $i -lt $retry_attempts; $i++){  
+            try {  
+                $webclient.DownloadFile('http://download.microsoft.com/download/1/F/6/1F637DB3-8EF9-4D96-A8F1-909DFD7C5E69/50428.00/Silverlight_Developer_x64.exe', $exeFilePath)  
+                break  
+            }  
+            Catch [Exception]{  
+                Start-Sleep 1  
+            }  
+        }  
+        Write-Host "Installing Microsoft Silverlight 5 Developer Runtime for Windows (64 bit)..."  
+        $process = (Start-Process -FilePath $exeFilePath -ArgumentList "/q" -Wait -Passthru)  
+        $exitCode = $process.ExitCode  
+        if ($exitCode -ne 0)  
+        {  
+          throw "Command failed with exit code $exitCode."  
+        }  
+        del $exeFilePath  
+        Write-Host "Microsoft Silverlight 5 Developer Runtime for Windows (64 bit) successfully installed" -ForegroundColor Green  
+    }
+
     # Google Chrome  
     Write-Host "Downloading Google Chrome..."  
     $msiFilePath = "$($env:USERPROFILE)\GoogleChromeStandaloneEnterprise.msi"  
