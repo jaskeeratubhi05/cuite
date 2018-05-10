@@ -17,57 +17,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '10.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2010\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2012\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2012\net45\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2013\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2013\net45\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2015\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2015\net45\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2017\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2017\net45\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '10.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2010\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2012\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2012\net45\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2013\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2013\net45\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2015\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2015\net45\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Debug\VS2017\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Debug\VS2017\net45\CUITe.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '10.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2010\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2012\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2012\net45\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2013\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2013\net45\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2015\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2015\net45\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2017\net40\</OutputPath>
-    <OutputPath Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2017\net45\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '10.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2010\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2012\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '11.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2012\net45\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2013\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '12.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2013\net45\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2015\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '14.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2015\net45\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.0'">bin\Release\VS2017\net40\CUITe.xml</DocumentationFile>
-    <DocumentationFile Condition="'$(VisualStudioVersion)' == '15.0' And '$(TargetFrameworkVersion)' == 'v4.5'">bin\Release\VS2017\net45\CUITe.xml</DocumentationFile>
-  </PropertyGroup>
+  <Import Project="..\Project.props" />
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>

@@ -5,12 +5,12 @@ branches:
 
 environment:
    matrix:
-      # Visual Studio 2015
-      - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       # Visual Studio 2017
       - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      # Visual Studio 2015
+      - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
-init:
+install:
 - ps: |
     Function Get-IniContent {  
         <#  
@@ -271,11 +271,24 @@ init:
       
     if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015")
     {
+        # Microsoft Visual Studio 2013 Premium  
+        $logFilePath = "$($env:TEMP)\VS2013Premium.txt"  
+        Write-Host "Installing Microsoft Visual Studio 2013 Premium..."  
+        $process = (Start-Process -FilePath "appveyor build dependencies\en_visual_studio_premium_2013_with_update_5_x86_web_installer_6815734.exe" -ArgumentList "/Passive /NoRestart /Log $logFilePath" -Wait -Passthru)  
+        $exitCode = $process.ExitCode  
+        if ($exitCode -ne 0)  
+        {  
+          Get-Content $logFilePath  
+          throw "Command failed with exit code $exitCode."  
+        }  
+        del $logFilePath  
+        Write-Host "Visual Studio 2013 Premium successfully installed" -ForegroundColor Green  
+
         # Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight  
         Write-Host "Downloading Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight..."  
         $msiFilePath = "$($env:USERPROFILE)\UITestPluginForSilverlightVS2013.msi"  
         $logFilePath = "$($env:TEMP)\UITestPluginForSilverlightVS2013.txt"  
-        $webclient.DownloadFile('https://visualstudiogallery.msdn.microsoft.com/51b4a94a-1878-4dcc-81e0-7dc92131d2da/file/133666/1/UITestPluginForSilverlightVS2013.msi', $msiFilePath)  
+        $webclient.DownloadFile('https://prachiboramsft.gallerycdn.vsassets.io/extensions/prachiboramsft/microsoftvisualstudio2013codeduitestpluginforsilve/1.0/1482140133605/133666/1/UITestPluginForSilverlightVS2013.msi', $msiFilePath)  
         Write-Host "Installing Microsoft Visual Studio 2013 Coded UI Test Plugin for Silverlight..."  
         $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
         $exitCode = $process.ExitCode  
@@ -288,11 +301,24 @@ init:
         del $logFilePath  
         Write-Host "Visual Studio 2013 Coded UI Test Plugin for Silverlight successfully installed" -ForegroundColor Green  
       
+        # Microsoft Visual Studio 2015 Enterprise  
+        $logFilePath = "$($env:TEMP)\VS2015Enterprise.txt"  
+        Write-Host "Installing Microsoft Visual Studio 2015 Enterprise..."  
+        $process = (Start-Process -FilePath "appveyor build dependencies\en_visual_studio_enterprise_2015_with_update_3_x86_x64_web_installer_8922986.exe" -ArgumentList "/Passive /NoRestart /Log $logFilePath" -Wait -Passthru)  
+        $exitCode = $process.ExitCode  
+        if ($exitCode -ne 3010)  
+        {  
+          Get-Content $logFilePath  
+          throw "Command failed with exit code $exitCode."  
+        }  
+        del $logFilePath  
+        Write-Host "Visual Studio 2015 Enterprise successfully installed" -ForegroundColor Green  
+
         # Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight  
         Write-Host "Downloading Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight..."  
         $msiFilePath = "$($env:USERPROFILE)\UITestPluginForSilverlightVS2015.msi"  
         $logFilePath = "$($env:TEMP)\UITestPluginForSilverlightVS2015.txt"  
-        $webclient.DownloadFile('https://visualstudiogallery.msdn.microsoft.com/bf0caedc-90eb-46af-9c1a-8e68d013bb99/file/189320/1/UITestPluginForSilverlightVS2015.msi', $msiFilePath)  
+        $webclient.DownloadFile('https://atinbansal.gallerycdn.vsassets.io/extensions/atinbansal/microsoftvisualstudio2015codeduitestpluginforsilve/1.0/1482142639885/189320/1/UITestPluginForSilverlightVS2015.msi', $msiFilePath)  
         Write-Host "Installing Microsoft Visual Studio 2015 Coded UI Test Plugin for Silverlight..."  
         $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
         $exitCode = $process.ExitCode  
@@ -309,7 +335,7 @@ init:
         Write-Host "Downloading Microsoft Silverlight 5 Toolkit - December 2011..."  
         $msiFilePath = "$($env:USERPROFILE)\Silverlight_5_Toolkit_December_2011.msi"  
         $logFilePath = "$($env:TEMP)\Silverlight_5_Toolkit_December_2011.txt"  
-        $webclient.DownloadFile('http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=silverlight&DownloadId=311823&FileTime=129679336571930000&Build=21053', $msiFilePath)  
+        $webclient.DownloadFile('https://github.com/MicrosoftArchive/SilverlightToolkit/releases/download/5/Silverlight_5_Toolkit_December_2011.1.msi', $msiFilePath)  
         Write-Host "Installing Microsoft Silverlight 5 Toolkit - December 2011..."  
         $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
         $exitCode = $process.ExitCode  
@@ -420,7 +446,7 @@ init:
     Write-Host "Downloading Selenium components for Coded UI Cross Browser Testing Version 1.7..."  
     $msiFilePath = "$($env:USERPROFILE)\CodedUITestCrossBrowserSetup.msi"  
     $logFilePath = "$($env:TEMP)\CodedUITestCrossBrowserSetup.txt"  
-    $webclient.DownloadFile('https://visualstudiogallery.msdn.microsoft.com/11cfc881-f8c9-4f96-b303-a2780156628d/file/85444/13/CodedUITestCrossBrowserSetup.msi', $msiFilePath)  
+    $webclient.DownloadFile('https://atinbansal.gallerycdn.vsassets.io/extensions/atinbansal/seleniumcomponentsforcodeduicrossbrowsertesting/1.7/1482138134269/85444/13/CodedUITestCrossBrowserSetup.msi', $msiFilePath)  
     Write-Host "Installing Selenium components for Coded UI Cross Browser Testing Version 1.7..."  
     $process = (Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $msiFilePath /quiet /l*v $logFilePath" -Wait -Passthru)  
     $exitCode = $process.ExitCode  
@@ -458,14 +484,34 @@ init:
     #Write-Host "Desktop ready"-ForegroundColor green  
       
     # Load remote sources with full trust  
-    $ConfigFilePath = ${Env:ProgramFiles(x86)} + "\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe.config"  
+    if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015")  
+    {  
+        $ConfigFilePath = ${Env:ProgramFiles(x86)} + "\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe.config"  
+    }
+    else
+    {
+        $ConfigFilePath = ${Env:ProgramFiles(x86)} + "\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe.config"  
+    }
     [xml]$Configuration = Get-Content -Path $ConfigFilePath  
     $element = $Configuration.CreateElement('loadFromRemoteSources')  
     $element.Attributes.Append($Configuration.CreateAttribute("enabled"))  
     $element.enabled = "true"  
     $Configuration.configuration.runtime.AppendChild($element)  
     $Configuration.Save($ConfigFilePath)  
-      
+
+    # Apply low integrity label on html files to mark them as accessible from an Enhanced Protected Mode process
+    # http://blogs.msdn.com/b/ieinternals/archive/2012/06/20/loading-local-files-in-enhanced-protected-mode-in-internet-explorer-10.aspx
+    # This circumvents the "Open File - Security Warning" dialog that appears when exes (applications under test) are launched
+    Start-Process -FilePath icacls.exe -ArgumentList '"%appveyor_build_folder%" /setintegritylevel (CI)(OI)Medium' -NoNewWindow
+    if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode)  }
+    
+    if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015")
+    {
+        Write-Host "Rebooting machine..." -ForegroundColor Green  
+        Restart-Computer -Force  
+        Start-Sleep -s 10  
+    }
+     
     # $blockRdp = $true; iex ($webclient.DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))"  
 assembly_info:
   patch: true
@@ -473,15 +519,6 @@ assembly_info:
   assembly_version: '{version}.0'
   assembly_file_version: '{version}.0'
   assembly_informational_version: '{version}-beta'
-install:
-- cmd: >-
-    REM Apply low integrity label on html files to mark them as accessible from an Enhanced Protected Mode process
-
-    REM http://blogs.msdn.com/b/ieinternals/archive/2012/06/20/loading-local-files-in-enhanced-protected-mode-in-internet-explorer-10.aspx
-
-    REM This circumvents the "Open File - Security Warning" dialog that appears when exes (applications under test) are launched
-
-    icacls "%appveyor_build_folder%" /setintegritylevel (CI)(OI)Medium
 nuget:
   disable_publish_on_pr: true
 build_script:
@@ -493,8 +530,101 @@ build_script:
     msbuild.exe src\build.proj /t:Build;Pack
 
     REM icacls src\Sut.HtmlTest\bin\Release\TestHtmlPage.html /setintegritylevel (CI)(OI)Low
-test:
-  assemblies: '**\bin\Release\*Test.dll'
+
+    powershell -Command "(Get-Content src\Local_CUITv10.runsettings) -replace '{APPVEYOR_BUILD_FOLDER}', '%APPVEYOR_BUILD_FOLDER%' | Out-File -encoding UTF8 src\Local_CUITv10.runsettings"
+
+    powershell -Command "(Get-Content src\Local_CUITv11.runsettings) -replace '{APPVEYOR_BUILD_FOLDER}', '%APPVEYOR_BUILD_FOLDER%' | Out-File -encoding UTF8 src\Local_CUITv11.runsettings"
+
+    powershell -Command "(Get-Content src\Local_CUITv12.runsettings) -replace '{APPVEYOR_BUILD_FOLDER}', '%APPVEYOR_BUILD_FOLDER%' | Out-File -encoding UTF8 src\Local_CUITv12.runsettings"
+
+    powershell -Command "(Get-Content src\Local_CUITv14.runsettings) -replace '{APPVEYOR_BUILD_FOLDER}', '%APPVEYOR_BUILD_FOLDER%' | Out-File -encoding UTF8 src\Local_CUITv14.runsettings"
+
+    powershell -Command "(Get-Content src\Local_CUITv15.runsettings) -replace '{APPVEYOR_BUILD_FOLDER}', '%APPVEYOR_BUILD_FOLDER%' | Out-File -encoding UTF8 src\Local_CUITv15.runsettings"
+
+test_script:
+- ps: |
+    Function RunTests {
+        [CmdletBinding()]  
+        Param(  
+            [ValidateNotNullOrEmpty()]  
+            [Parameter(Mandatory=$True)]  
+            [string]$vsTestConsoleExe,  
+
+            [ValidateNotNullOrEmpty()]  
+            [Parameter(Mandatory=$True)]  
+            [string]$testDllFilePattern,  
+
+            [ValidateNotNullOrEmpty()]  
+            [Parameter(Mandatory=$True)]  
+            [string]$runSettingsFilePath  
+        )  
+      
+        Begin  
+            {Write-Verbose "$($MyInvocation.MyCommand.Name):: Function started"}  
+          
+        Process  
+        {  
+            Write-Verbose "$($MyInvocation.MyCommand.Name):: Processing: $vsTestConsoleExe $testDllFilePattern"  
+            
+            $parameters = ""
+
+            Get-ChildItem `
+                -Path "$($env:APPVEYOR_BUILD_FOLDER)\src" `
+                -File `
+                -Recurse `
+                -Filter *.dll |
+                where-object FullName -Like $testDllFilePattern |
+                ForEach-Object {
+                    $parameters = $parameters + "`"" + $_.FullName + "`" ";
+                }  
+            
+            $processInfo = New-Object System.Diagnostics.ProcessStartInfo 
+            $processInfo.FileName = "$vsTestConsoleExe" 
+            $processInfo.RedirectStandardError = $true 
+            $processInfo.RedirectStandardOutput = $true 
+            $processInfo.UseShellExecute = $false 
+            $processInfo.Arguments = "$parameters /Settings:`"$runSettingsFilePath`" /logger:Appveyor" 
+            $process = New-Object System.Diagnostics.Process 
+            $process.StartInfo = $processInfo 
+            $process.Start() | Out-Null 
+            $stdout = $process.StandardOutput.ReadToEnd()
+            $stderr = $process.StandardError.ReadToEnd()
+            $process.WaitForExit() 
+            Write-Host $stdout 
+            Write-Host $stderr 
+            $exitCode = $process.ExitCode  
+            Write-Host $exitCode 
+            if ($exitCode -ne 0)  
+            {  
+              throw "Command failed with exit code $exitCode."  
+            }  
+
+            Write-Verbose "$($MyInvocation.MyCommand.Name):: Finished Processing: $vsTestConsoleExe $testDllFilePattern"  
+        }  
+          
+        End  
+            {Write-Verbose "$($MyInvocation.MyCommand.Name):: Function ended"}  
+    }
+
+    if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015")
+    {
+        Write-Host "Tests require a Remote Desktop Connection (RDP) to continue..."  
+        $webclient = New-Object System.Net.WebClient  
+        $blockRdp = $true; iex ($webclient.DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))  
+    }
+
+    $vsTestConsoleExe = "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2010\net40\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv10.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2012\net40\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv11.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2012\net45\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv11.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2013\net40\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv12.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2013\net45\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv12.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2015\net40\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv14.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2015\net45\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv14.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2017\net40\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv15.runsettings"
+    RunTests $vsTestConsoleExe "*bin\Release\VS2017\net45\*Test.dll" "$($env:APPVEYOR_BUILD_FOLDER)\src\Local_CUITv15.runsettings"
+    
+
 artifacts:
 - path: '*.nupkg'
   name: NuGet
